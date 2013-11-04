@@ -20,7 +20,7 @@ namespace JTUtility {
         private void OnSelectDirectoryClick(object sender, RoutedEventArgs e) {
             FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
             folderBrowser.Description = "Select Folder to Process";
-            folderBrowser.RootFolder = Environment.SpecialFolder.MyComputer;
+            folderBrowser.RootFolder = Environment.SpecialFolder.MyPictures;
             folderBrowser.ShowNewFolderButton = false;
             DialogResult result = folderBrowser.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK) {

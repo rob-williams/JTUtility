@@ -15,6 +15,8 @@ namespace JTUtility.Operations {
 
         private BackgroundWorker worker;
         private float progress;
+        private int x;
+        private int y;
         private string filePath;
         private List<PictureProcessType> processTypes;
 
@@ -34,8 +36,8 @@ namespace JTUtility.Operations {
         private void ConvertToBW(Bitmap bitmap) {
             float prevProgress = progress;
             float ratio = 1F / processTypes.Count;
-            for (int x = 0; x < bitmap.Width; x++) {
-                for (int y = 0; y < bitmap.Height; y++) {
+            for (x = 0; x < bitmap.Width; x++) {
+                for (y = 0; y < bitmap.Height; y++) {
                     Color pixel = bitmap.GetPixel(x, y);
                     int bw = (int)((pixel.R * 0.299) + (pixel.G * 0.587) + (pixel.B * 0.114));
                     bitmap.SetPixel(x, y, Color.FromArgb(bw, bw, bw));
@@ -61,8 +63,8 @@ namespace JTUtility.Operations {
         private void ConvertToSepia(Bitmap bitmap) {
             float prevProgress = progress;
             float ratio = 1F / processTypes.Count;
-            for (int x = 0; x < bitmap.Width; x++) {
-                for (int y = 0; y < bitmap.Height; y++) {
+            for (x = 0; x < bitmap.Width; x++) {
+                for (y = 0; y < bitmap.Height; y++) {
                     Color pixel = bitmap.GetPixel(x, y);
                     int r = (int)((pixel.R * 0.393) + (pixel.G * 0.769) + (pixel.B * 0.189));
                     int g = (int)((pixel.R * 0.349) + (pixel.G * 0.686) + (pixel.B * 0.168));

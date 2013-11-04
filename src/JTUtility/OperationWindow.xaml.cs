@@ -12,33 +12,39 @@ namespace JTUtility {
     public partial class OperationWindow : Window {
 
         private int completedCount;
+        private int workerIndex;
         private List<BackgroundWorker> workers;
-        private List<TextBlock> fileNameBlocks;
+        private List<TextBlock> filePathBlocks;
         private List<ProgressBar> progressBars;
 
         public OperationWindow() {
             InitializeComponent();
             OperationControl.InitializeOperations();
             completedCount = 0;
+            workerIndex = 0;
             workers = new List<BackgroundWorker>(OperationControl.Operations.Count);
-            fileNameBlocks = new List<TextBlock>(OperationControl.Operations.Count);
+            filePathBlocks = new List<TextBlock>(OperationControl.Operations.Count);
             progressBars = new List<ProgressBar>(OperationControl.Operations.Count);
             PopulateGrid();
             UpdateTitle();
-            StartWorkers();
+            CreateWorkers();
+            AdvanceWorkers();
         }
 
         private void PopulateGrid() {
             for (int i = 0; i < OperationControl.Operations.Count; i++) {
+                //add a row definition for this picture's row
                 PictureGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(30) });
-                TextBlock fileNameBlock = new TextBlock {
+                //create a TextBlock to display the picture's file path
+                TextBlock filePathBlock = new TextBlock {
                     Text = OperationControl.Operations[i].FilePath,
                     VerticalAlignment = System.Windows.VerticalAlignment.Center
                 };
-                Grid.SetColumn(fileNameBlock, 0);
-                Grid.SetRow(fileNameBlock, i);
-                PictureGrid.Children.Add(fileNameBlock);
-                fileNameBlocks.Add(fileNameBlock);
+                Grid.SetColumn(filePathBlock, 0);
+                Grid.SetRow(filePathBlock, i);
+                PictureGrid.Children.Add(filePathBlock);
+                filePathBlocks.Add(filePathBlock);
+                //create a ProgressBar to display the picture's operation progress
                 ProgressBar progressBar = new ProgressBar {
                     Margin = new Thickness(20, 5, 20, 5),
                     Minimum = 0,
@@ -52,7 +58,7 @@ namespace JTUtility {
             }
         }
 
-        private void StartWorkers() {
+        private void CreateWorkers() {
             for (int i = 0; i < OperationControl.Operations.Count; i++) {
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.WorkerReportsProgress = true;
@@ -60,7 +66,22 @@ namespace JTUtility {
                 worker.RunWorkerCompleted += OnWorkerComplete;
                 worker.ProgressChanged += OnWorkerProgressChange;
                 workers.Add(worker);
-                worker.RunWorkerAsync();
+            }
+        }
+
+        private void AdvanceWorkers() {
+            //if we've already ran all workers, just ignore this call
+            if (workerIndex >= OperationControl.Operations.Count) {
+                return;
+            }
+            int prevIndex = workerIndex;
+            //we want to run at most 5 workers at a time
+            workerIndex += 5;
+            if (workerIndex > OperationControl.Operations.Count) {
+                workerIndex = OperationControl.Operations.Count;
+            }
+            for (int i = prevIndex; i < workerIndex; i++) {
+                workers[i].RunWorkerAsync();
             }
         }
 
@@ -74,6 +95,9 @@ namespace JTUtility {
             progressBars[index].Value = 100;
             completedCount++;
             UpdateTitle();
+            if (completedCount >= workerIndex) {
+                AdvanceWorkers();
+            }
         }
 
         private void UpdateTitle() {
