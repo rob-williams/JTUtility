@@ -86,7 +86,9 @@ namespace JTUtility.Operations {
                                                      path.EndsWith(UnalteredEnd)) ||
                                                     (CreateSecondUnalteredCopy &&
                                                      path.EndsWith(SecondUnalteredEnd)));
-            picturePaths = picturePaths.Where(path => !Path.GetFileNameWithoutExtension(path).EndsWith(BwEnd) &&
+            picturePaths = picturePaths.Where(path => !Path.GetExtension(path).EndsWith("tmp") &&
+                                                      !Path.GetExtension(path).EndsWith("TMP") &&
+                                                      !Path.GetFileNameWithoutExtension(path).EndsWith(BwEnd) &&
                                                       !Path.GetFileNameWithoutExtension(path).EndsWith(SepiaEnd) &&
                                                       !Path.GetFileNameWithoutExtension(path).EndsWith(UnalteredEnd) &&
                                                       !Path.GetFileNameWithoutExtension(path).EndsWith(SecondUnalteredEnd))
